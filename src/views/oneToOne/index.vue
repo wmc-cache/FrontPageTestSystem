@@ -11,6 +11,19 @@
             @click="openVideoOrNot">切换</el-button>
     </ul>
 
+    <el-form :model="formInline" label-width="250px" class="demo-form-inline">
+        <el-form-item label="发送消息">
+            <el-input v-model="formInline.rtcmessage" placeholder="消息"></el-input>
+        </el-form-item>
+        <el-form-item label="远端消息">
+            <div>{{ formInline.rtcmessageRes }}</div>
+        </el-form-item>
+
+        <el-form-item>
+            <el-button type="primary" size="small" @click="sendMessageUserRtcChannel">点击发送</el-button>
+        </el-form-item>
+    </el-form>
+
     <video style="width:200px;height:200px" @click="streamInfo('localdemo01')" id="localdemo01" autoplay controls
         muted></video>
     <video style="width:500px;height:500px" @click="streamInfo('remoteVideo01')" id="remoteVideo01" autoplay controls
@@ -53,28 +66,29 @@ let userInfo = reactive<UserInfo>({
 })
 let linkSocket: any
 let roomUserList = reactive<UserInfo[]>([])
-let channel
-let formInline = {
+let channel: any
+let formInline = reactive({
     rtcmessage: undefined,
-    rtcmessageRes: undefined, //响应
-}
-let mapSender
+    rtcmessageRes: [], //响应
+})
+let mapSender //发送的媒体
 /**
  * 本地实例化后的PeerConnection实例
  */
 let localRtcPc: any
 
-
 /**
  * 点击远程呼叫
  * @param e 
  */
-async function onCall(e: { data: { [x: string]: string; } }) {
+async function onCall(e: {
+    data: {
+        [x: string]: string;
+    }
+}) {
     console.log("远程呼叫：", e)
     await initCalleeInfo(e.data['targetUid'], e.data['userId'])
 }
-
-
 
 //初始化socket连接
 function init(userId: string | null, roomId: string | null, nickname: string | null) {
@@ -191,7 +205,9 @@ function streamInfo(domId: string) {
 function onPcEvent(pc: any, localUid: string | null, remoteUid: string | null) {
     channel = pc.createDataChannel("chat");
     //监听远程媒体轨道即远端音视频信息
-    pc.ontrack = function (event: { track: MediaStreamTrack }) {
+    pc.ontrack = function (event: {
+        track: MediaStreamTrack
+    }) {
         console.log(event)
         setRemoteDomVideoStream("remoteVideo01", event.track)
     };
@@ -200,21 +216,27 @@ function onPcEvent(pc: any, localUid: string | null, remoteUid: string | null) {
         console.log("重新协商", e)
     }
     // 创建datachannel后监听回调以及 p2p消息监听
-    pc.ondatachannel = function (ev: { channel: { onopen: () => void; onmessage: (data: any) => void; onclose: () => void; }; }) {
+    pc.ondatachannel = function (ev: {
+        channel: {
+            onopen: () => void; onmessage: (data: any) => void; onclose: () => void;
+        };
+    }) {
         console.log('Data channel is created!');
         ev.channel.onopen = function () {
             console.log('Data channel ------------open----------------');
         };
         ev.channel.onmessage = function (data: any) {
             console.log('Data channel ------------msg----------------', data);
-            formInline.rtcmessageRes = data.data
+            formInline.rtcmessageRes.push(data.data)
         };
         ev.channel.onclose = function () {
             console.log('Data channel ------------close----------------');
         };
     };
     // ICE 候选监听
-    pc.onicecandidate = (event: { candidate: any }) => {
+    pc.onicecandidate = (event: {
+        candidate: any
+    }) => {
         if (event.candidate) {
             linkSocket.emit('candidate', {
                 'targetUid': remoteUid,
@@ -265,7 +287,6 @@ async function initCallerInfo(callerId: string | null, calleeId: string | null) 
 
     linkSocket.emit("offer", params)
 }
-
 
 /**
  * 被呼叫端的过程
@@ -320,6 +341,16 @@ function getStats() {
 
 }
 
+/**
+ * 发送文字信息
+ */
+function sendMessageUserRtcChannel() {
+    if (!channel) {
+        alert("请先建立webrtc连接")
+    }
+    channel.send(formInline.rtcmessage)
+    formInline.rtcmessage = undefined
+}
 /**      
  *  增加比特率
  */
