@@ -10,6 +10,11 @@ function createNewRouter() {
         path: '/',
         name: 'home',
         component: () => import('@/views/home/index.vue')
+      },
+      {
+        path: '/oneToOne',
+        name: 'oneToOne',
+        component: () => import('@/views/oneToOne/index.vue')
       }
     ]
   });

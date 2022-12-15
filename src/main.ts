@@ -12,6 +12,13 @@ const app = createApp(App);
 dayjs.locale("zh-ch");
 app.config.globalProperties.$dayjs = dayjs;
 
+const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+const host = window.location.host
+const server = protocol + host
+// @ts-ignore
+window.serverSocketUrl = process.env.NODE_ENV === 'development' ? 'ws://127.0.0.1:18080' : server
+
+
 app.use(router);
 app.use(ElementPlus);
 app.use(createPinia());
