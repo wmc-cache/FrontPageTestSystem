@@ -2,6 +2,10 @@
     <div @click="goTo('/oneToOne')">
         一对一网络视频
     </div>
+
+    <div @click="goTo('/live')">
+        直播
+    </div>
 </template>
 
 <script setup lang="ts">
