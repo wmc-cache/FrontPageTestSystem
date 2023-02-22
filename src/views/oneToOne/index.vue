@@ -36,7 +36,6 @@ import {
     reactive
 } from "vue";
 import {
-    handleError,
     getParams,
     getLocalUserMedia
 } from "./utils/index"
@@ -352,7 +351,7 @@ function sendMessageUserRtcChannel() {
     formInline.rtcmessage = ""
 }
 /**      
- *  增加比特率
+ *  增加比特率（单位时间内传送的比特（bit）数）
  */
 function changeBitRate() {
     const senders = localRtcPc.getSenders();
@@ -366,7 +365,6 @@ function changeBitRate() {
  */
 function openVideoOrNot() {
     const senders = localRtcPc.getSenders();
-    console.log('senders', senders)
     const send = senders.find((s: any) => s.track.kind === 'video')
     send.track.enabled = !send.track.enabled //控制视频显示与否
 }

@@ -18,9 +18,10 @@
     "mitt": "^3.0.0",
     "pinia": "^2.0.14",
     "resize-observer-polyfill": "^1.5.1",
+    "socket.io-client": "^4.5.1",
     "vue": "^3.2.26",
     "vue-router": "^4.0.12",
-    "socket.io-client": "^4.5.1"
+    "webrtc-adapter": "^8.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",

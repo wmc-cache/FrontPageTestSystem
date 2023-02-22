@@ -20,6 +20,10 @@ function createNewRouter() {
         path: '/live',
         name: 'live',
         component: () => import('@/views/live/index.vue')
+      }, {
+        path: '/Janus',
+        name: 'Janus',
+        component: () => import('@/views/Janus/index.vue')
       }
     ]
   });

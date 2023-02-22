@@ -6,6 +6,10 @@
     <div @click="goTo('/live')">
         直播
     </div>
+
+    <div @click="goTo('/Janus')">
+        Janus
+    </div>
 </template>
 
 <script setup lang="ts">
